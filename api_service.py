@@ -2,6 +2,7 @@ from flask import Flask, jsonify, abort, make_response, request
 from time import strftime
 app = Flask(__name__)
 
+# test
 nowTime = strftime("%Y-%m-%d %H:%M")
 
 books = [
@@ -37,12 +38,22 @@ def get_book(book_id):
 def create_book():
     nowTime = strftime("%Y-%m-%d %H:%M")
     if not request.json or not 'title' in request.json: abort(400)
+
+#  check if title or description we are trying to put are already present
+    title = request.json['title']
+    description = request.json['description']
+    if any(d['title'] == title for d in books) or any(d['description'] == description for d in books):
+        print("error, the given title or description is already present")
+        abort(400)
+# check if title or description we are trying to put are already present
+
     book = {
         'id': books[-1]['id'] + 1,
         'title': request.json['title'],
         'description': request.json.get('description', ""),
         'creation_date': nowTime
     }
+
     books.append(book)
     return jsonify({'book:': book}), 201
 
